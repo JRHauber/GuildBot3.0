@@ -244,7 +244,7 @@ async def test(ctx, *args):
 
 @bot.command()
 async def bothelp(ctx):
-	await ctx.send('Read the wiki if you have any questions! https://github.com/Lanidae/Guildbot-Reloaded/wiki')
+	await ctx.send('Read the wiki if you have any questions! https://github.com/Lanidae/GuildBot3.0/wiki')
 @bot.command()
 async def add(ctx, arg1, arg2):
 	adder = rankAdder[arg2.lower()]

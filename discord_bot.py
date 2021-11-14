@@ -148,6 +148,7 @@ def rollDice(dMax = 1, mod = 0, dNum = 1, name = ""):
 				result2 += " - CRIT"
 			if(x < dNum):
 				dRes += result2 + ", "
+		dRes = dRes[:-2]
 		dRes += "]` Total: `" + str(sum) + "`"
 	else:
 		dRes += " `["
@@ -310,17 +311,17 @@ async def roll(ctx, *args):
 		temp = {}
 		if '+' not in args[0]:
 			if 'd' not in args[0]:
-				await ctx.send(rollDice(int(args[0]), 0, 1, ctx.author.name))
+				await ctx.send(rollDice(int(args[0]), 0, 1, ctx.author.display_name))
 			else:
 				temp = args[0].split('d')
 				if temp[0] != '':
-					await ctx.send(rollDice(int(temp[1]), 0, int(temp[0]), ctx.author.name))
+					await ctx.send(rollDice(int(temp[1]), 0, int(temp[0]), ctx.author.display_name))
 				else:
-					await ctx.send(rollDice(int(temp[1]), 0, 1, ctx.author.name))
+					await ctx.send(rollDice(int(temp[1]), 0, 1, ctx.author.display_name))
 		else:
 			if 'd' not in args[0]:
 				temp = args[0].split('+')
-				await ctx.send(rollDice(int(temp[0]), int(temp[1]), 1, ctx.author.name))
+				await ctx.send(rollDice(int(temp[0]), int(temp[1]), 1, ctx.author.display_name))
 			else:
 				temp = args[0].split('d')
 				if temp[0] != '':
@@ -328,7 +329,7 @@ async def roll(ctx, *args):
 				else:
 					count = 1
 				temp = temp[1].split('+')
-				await ctx.send(rollDice(int(temp[0]), int(temp[1]), int(count), ctx.author.name))
+				await ctx.send(rollDice(int(temp[0]), int(temp[1]), int(count), ctx.author.display_name))
 
 @bot.command()
 async def heal(ctx, *args):

@@ -307,7 +307,6 @@ async def roll(ctx, *args):
 			count = 1
 			await ctx.send(rollDice(dice, adder, count, localchar['name']))
 	else:
-
 		temp = {}
 		if '+' not in args[0]:
 			if 'd' not in args[0]:
@@ -319,7 +318,15 @@ async def roll(ctx, *args):
 				else:
 					await ctx.send(rollDice(int(temp[1]), 0, 1, ctx.author.display_name))
 		else:
-			if 'd' not in args[0]:
+			string = args[0]
+			if (string[0] == '+'):
+				print(args[0][0])
+				localchar = characterList[findCharacter(findSelected(ctx.author.id))]
+				dice = localchar['dice']
+				adder = int(localchar['adder']) + int(string[1:])
+				count = 1
+				await ctx.send(rollDice(dice, adder, count, ctx.author.display_name))
+			elif 'd' not in args[0]:
 				temp = args[0].split('+')
 				await ctx.send(rollDice(int(temp[0]), int(temp[1]), 1, ctx.author.display_name))
 			else:
@@ -677,4 +684,5 @@ async def init(ctx, *args):
 
 
 		
+
 bot.run(bot_token)

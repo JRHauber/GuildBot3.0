@@ -21,7 +21,8 @@ global tokenList
 global rankDice
 global rankAdder
 global rankHealth
-load_dotenv("D:/Dev/Python/Discord_Bot/.env")
+path = 'D:/Dev/Python/Discord_Bot/GuildBot3.0/'
+load_dotenv(path + ".env")
 
 bot_token = getenv("TOKEN")
 characterList = []
@@ -162,8 +163,6 @@ def rollDice(dMax = 1, mod = 0, dNum = 1, name = ""):
 
 def titleString(str):
 	return str.capitalize()
-
-path = 'D:/Dev/Python/Discord_Bot/'
 
 def fReload():
 	global characterList

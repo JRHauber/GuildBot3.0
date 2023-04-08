@@ -460,6 +460,13 @@ async def roll(ctx, *args):
                 adder = int(localchar['adder']) + int(string[1:])
                 count = 1
                 await ctx.send(rollDice(dice, adder, count, ctx.author.display_name))
+            elif (string[0] == '-'):
+                print(args[0][0])
+                localchar = characterList[findCharacter(findSelected(ctx.author.id))]
+                dice = localchar['dice']
+                adder = int(localchar['adder']) - int(string[1:])
+                count = 1
+                await ctx.send(rolLDice(dice, adder, count, ctx.author.display_name))
             elif 'd' not in args[0]:
                 temp = args[0].split('+')
                 await ctx.send(rollDice(int(temp[0]), int(temp[1]), 1, ctx.author.display_name))

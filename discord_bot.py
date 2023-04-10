@@ -111,28 +111,6 @@ bot = commands.Bot(activity=activity, command_prefix='!g')
 @bot.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(bot))
-    
-#@bot.event
-#async def on_message(message):
-#    global deleteMsg
-#    channel = bot.get_channel(1015905981454098503)
-#    try:
-#        name = message.author.nick
-#    except:
-#        name = message.author.name
-#    if name == None:
-#        name = message.author.name
-#    try:
-#        c = '*' + message.channel.name + '*'
-#    except:
-#        c = ''
-#    try:
-#       guild = '*' + message.guild.name + '*'
-#   except:
-#        guild = ''
-#    if not message.author.bot:
-#        await channel.send("(" + guild + ") - (" + c + ") - " + name + " - " + message.content, delete_after=300)
-#    await bot.process_commands(message)
 
 class character:
     def __init__(self, name, uID, dice, adder, health, maxhealth, cID):

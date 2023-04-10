@@ -11,6 +11,7 @@ from json import JSONEncoder
 from os import getenv
 from threading import Timer
 import math
+import ship
 
 global characterList
 global selectedList
@@ -128,7 +129,6 @@ class selectedClass:
         self.uID = uID
         self.cID = cID
 
-
 class token:
     def __init__(self, name, dice, adder, health, creator):
         self.name = name
@@ -137,14 +137,6 @@ class token:
         self.health = health
         self.maxhealth = health
         self.uID = creator
-        
-class ship:
-    def __init__(self, type, attack_names, attack_dice, defence):
-        self.type = type
-        self.attack_names = attack_names
-        self.attack_dice = attack_dice
-        self.defence = defence
-
 class charEncoder(JSONEncoder):
     def default(self, o):
         return o.__dict__
@@ -177,49 +169,6 @@ def rollDice(dMax=1, mod=0, dNum=1, name=""):
         dRes += "(" + str(result-int(mod)) + ") - " + result2 + "]`"
     return dRes
 
-def ship_init():
-    newShip = ship("Perdition", ['turbolaser', 'laser', 'ion', 'missile', 'silencer'], ['20d40', '6d40', '4d40', '6d40', '1d40'], 70)
-    ships.append(newShip)
-    newShip = ship("Harrower", ['turbolaser', 'laser', 'ion', 'torpedo', 'missile'], ['10d40', '4d40', '1d40', '6d30', '6d40'], 60)
-    ships.append(newShip)
-    newShip = ship("Centurion", ['turbolaser', 'laser', 'ion'], ['6d40', '6d30', '6d40'], 50)
-    ships.append(newShip)
-    newShip = ship("Terminus", ['turbolaser', 'laser', 'ion', 'missile'], ['6d40', '8d30', '1d40', '3d40'], 50)
-    ships.append(newShip)
-    newShip = ship("Bulk", ['turbolaser'], ['5d40'], 40)
-    ships.append(newShip)
-    newShip = ship("Gage", ['turbolaser', 'ramming'], ['5d40', '1d100'], 40)
-    ships.append(newShip)
-    newShip = ship("Derriphan", ['autoblaster', 'laser', 'missile'], ['6d40', '4d30', '3d40'], 40)
-    ships.append(newShip)
-    newShip = ship("Interdictor", ['turbolaser', 'laser'], ['5d40', '6d30'], 40)
-    ships.append(newShip)
-    newShip = ship("Phantom", ['laser', 'missile', 'torpedo'], ['4d30', '1d30', '1d30'], 30)
-    ships.append(newShip)
-    newShip = ship("Fury", ['laser', 'missile', 'torpedo'], ['4d30', '1d30', '1d30'], 30)
-    ships.append(newShip)
-    newShip = ship("Decimus", ['laser', 'missile', 'torpedo'], ['2d20', '1d30', '1d30'], 25)
-    ships.append(newShip)
-    newShip = ship("Onslaught", ['laser', 'mlaser', 'missile'], ['2d20', '2d40', '1d30'], 25)
-    ships.append(newShip)
-    newShip = ship("Extinction", ['laser', 'torpedo'], ['2d20', '1d30'], 25)
-    ships.append(newShip)
-    newShip = ship("Mangler", ['laser', 'missile', 'railgun'], ['4d20', '1d30', '10d20'], 25)
-    ships.append(newShip)
-    newShip = ship("Dustmaker", ['laser', 'missile'], ['2d20', '1d30'], 25)
-    ships.append(newShip)
-    newShip = ship("Supremacy", ['laser'], ['4d20'], 20)
-    ships.append(newShip)
-    newShip = ship("Blackbolt", ['laser', 'missile'], ['2d20', '1d30'], 20)
-    ships.append(newShip)
-    newShip = ship("Quell", ['laser', 'missile'], ['2d20', '1d30'], 20)
-    ships.append(newShip)
-    newShip = ship("Rycer", ['llaser', 'laser'], ['2d20', '2d20'], 20)
-    ships.append(newShip)
-    newShip = ship("Mailoc", ['laser', 'railgun'], ['2d20', '5d20'], 20)
-    ships.append(newShip)
-    
-ship_init()
 
 def titleString(str):
     return str.capitalize()
@@ -308,45 +257,6 @@ initiativeList = json.loads(data)
 
 
 @bot.command()
-async def ship(ctx, *args):
-    print(ships)
-    for s in ships:
-        if s.type.lower() == args[0].lower():
-            if not args[1].lower() == 'defence':
-                for a in s.attack_names:
-                    if a.lower() == args[1].lower():
-                        dice = s.attack_dice[s.attack_names.index(a)]
-                        break
-            else:
-                dice = '1d' + str(s.defence)
-            break
-    name = args[0]
-    temp = dice.split('d')
-    dMax = int(temp[1])
-    dNum = int(temp[0])
-    await ctx.send(rollDice(dMax, 0, dNum, name))
-
-@bot.command()
-async def shiplist(ctx):
-    output = '```'
-    for s in ships:
-        output += '\n'
-        output += s.type + '\n'
-        for a in s.attack_names:
-            output += a + ' - ' + s.attack_dice[s.attack_names.index(a)] + '\n'
-        output += 'Defence - 1d' + str(s.defence)
-        output += '\n --- \n'
-    output += '```'
-    await ctx.send(output)
-    
-            
-
-@bot.command()
-async def test(ctx, *args):
-    await ctx.send('{}'.format(' '.join(args)))
-
-
-@bot.command()
 async def bothelp(ctx):
     await ctx.send('Read the wiki if you have any questions! https://github.com/Lanidae/GuildBot3.0/wiki')
 
@@ -382,10 +292,12 @@ async def select(ctx, arg):
                 await ctx.send('You selected - `' + titleString(arg) + '` - I\'ll use them until you tell me to use someone else :)')
                 break
             else:
-                await ctx.send('Sorry, you can only select your own characters!')
+                await ctx.send('Sorry, you can only select your own characters!', delete_after = 30)
+                await ctx.message.delete(delay = 30)
                 break
     if(findSelected(ctx.author.id) == 0):
-        await ctx.send('Sorry, I can\'t find a character with that name!')
+        await ctx.send('Sorry, I can\'t find a character with that name!', delete_after = 30)
+        await ctx.message.delete(delay = 30)
 
 
 @bot.command()
@@ -409,7 +321,8 @@ async def update(ctx, arg1):
 async def roll(ctx, *args):
     if(len(args) == 0):
         if(findSelected(ctx.author.id) == 0):
-            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can roll your rank dice.")
+            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can roll your rank dice.", delete_after = 30)
+            await ctx.message.delete(delay = 30)
         else:
             localchar = characterList[findCharacter(
                 findSelected(ctx.author.id))]
@@ -462,7 +375,8 @@ async def roll(ctx, *args):
 async def heal(ctx, *args):
     if(len(args) == 0):
         if(findSelected(ctx.author.id) == 0):
-            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can heal you.")
+            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can heal you.", delete_after = 30)
+            await ctx.message.delete(delay = 30)
         else:
             cPos = findCharacter(findSelected(ctx.author.id))
             if (1 + int(characterList[cPos]['health'])) > int(characterList[cPos]['maxhealth']):
@@ -477,7 +391,8 @@ async def heal(ctx, *args):
 
     else:
         if(findSelected(ctx.author.id) == 0):
-            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can heal you.")
+            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can heal you.", delete_after = 30)
+            await ctx.message.delete(delay = 30)
         else:
             cPos = findCharacter(findSelected(ctx.author.id))
             if (int(args[0]) + int(characterList[cPos]['health'])) > int(characterList[cPos]['maxhealth']):
@@ -495,7 +410,8 @@ async def heal(ctx, *args):
 async def h(ctx, *args):
     if(len(args) == 0):
         if(findSelected(ctx.author.id) == 0):
-            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can heal you.")
+            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can heal you.", delete_after = 30)
+            await ctx.message.delete(delay = 30)
         else:
             cPos = findCharacter(findSelected(ctx.author.id))
             if (1 + int(characterList[cPos]['health'])) > int(characterList[cPos]['maxhealth']):
@@ -510,7 +426,8 @@ async def h(ctx, *args):
 
     else:
         if(findSelected(ctx.author.id) == 0):
-            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can heal you.")
+            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can heal you.", delete_after = 30)
+            await ctx.message.delete(delay = 30)
         else:
             cPos = findCharacter(findSelected(ctx.author.id))
             if (int(args[0]) + int(characterList[cPos]['health'])) > int(characterList[cPos]['maxhealth']):
@@ -528,7 +445,8 @@ async def h(ctx, *args):
 async def d(ctx, *args):
     if(len(args) == 0):
         if(findSelected(ctx.author.id) == 0):
-            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can damage you.")
+            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can damage you.", delete_after = 30)
+            await ctx.message.delete(delay = 30)
         else:
             cPos = findCharacter(findSelected(ctx.author.id))
             if ((int(characterList[cPos]['health']) - 1) <= 0) or ((int(characterList[cPos]['health']) - 1) <= -1):
@@ -543,7 +461,8 @@ async def d(ctx, *args):
                 await ctx.send("Set your health to: " + str(characterList[cPos]['health']))
     else:
         if(findSelected(ctx.author.id) == 0):
-            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can damage you.")
+            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can damage you.", delete_after = 30)
+            await ctx.message.delete(delay = 30)
         else:
             cPos = findCharacter(findSelected(ctx.author.id))
             if ((int(characterList[cPos]['health']) - int(args[0])) <= 0) or ((int(characterList[cPos]['health']) - int(args[0])) <= -1):
@@ -562,7 +481,8 @@ async def d(ctx, *args):
 async def damage(ctx, *args):
     if(len(args) == 0):
         if(findSelected(ctx.author.id) == 0):
-            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can damage you.")
+            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can damage you.", delete_after = 30)
+            await ctx.message.delete(delay = 30)
         else:
             cPos = findCharacter(findSelected(ctx.author.id))
             if ((int(characterList[cPos]['health']) - 1) <= 0) or ((int(characterList[cPos]['health']) - 1) <= -1):
@@ -577,7 +497,8 @@ async def damage(ctx, *args):
                 await ctx.send("Set your health to: " + str(characterList[cPos]['health']))
     else:
         if(findSelected(ctx.author.id) == 0):
-            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can damage you.")
+            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can damage you.", delete_after = 30)
+            await ctx.message.delete(delay = 30)
         else:
             cPos = findCharacter(findSelected(ctx.author.id))
             if ((int(characterList[cPos]['health']) - int(args[0])) <= 0) or ((int(characterList[cPos]['health']) - int(args[0])) <= -1):
@@ -595,7 +516,8 @@ async def damage(ctx, *args):
 @bot.command()
 async def report(ctx):
     if(findSelected(ctx.author.id) == 0):
-        await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can give you a character report.")
+        await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can give you a character report.", delete_after = 30)
+        await ctx.message.delete(delay = 30)
     else:
         cPos = findCharacter(findSelected(ctx.author.id))
         message = '```\nName: ' + characterList[cPos]['name'] + '\nHealth: ' + str(characterList[cPos]['health']) + '/' + str(
@@ -612,7 +534,8 @@ async def init(ctx, *args):
     global initiativeListS
     if (args[0] == 'add'):
         if(findSelected(ctx.author.id) == 0):
-            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can add you to initiative")
+            await ctx.send("I'm sorry, it doesn't look like you've selected a character yet. Be sure to do !gselect <name> so I can add you to initiative", delete_after = 30)
+            await ctx.message.delete(delay = 30)
         else:
             if (args[1] == '1'):
                 initiativeList1.append(findSelected(ctx.author.id))
@@ -822,6 +745,19 @@ async def init(ctx, *args):
             await ctx.send(titleString(name) + " has been removed from initiative!")
         else:
             await ctx.send("You are not allowed to remove people from initiative! Rude!")
+            
+@bot.command()
+async def shiptypes(ctx):
+    output = "```"
+    for k, v in ship.defaults.items():
+        output += k + " - " + str(v[4]) + " shields - " + str(v[3]) + " health\n"
+    output += "```"
+    await ctx.send(output)
+    
+@bot.command()
+async def shipinit(ctx, *args):
+    await ctx.channel.send("This doesn't work yet!", delete_after=30)
+    await ctx.message.delete(delay = 30)
             
 @bot.command(pass_context=True)
 async def broadcast(ctx, *, msg):

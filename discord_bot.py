@@ -57,7 +57,16 @@ rankDice = {
     'rank6': 35,
     'council': 45,
     'chosen': 50,
-    'emperor': 50
+    'emperor': 50,
+    'lux': 40,
+    'lux1': 40,
+    'lux2': 40,
+    'lux3': 40,
+    'lux4': 40,
+    'lux5': 40,
+    'lux6': 40,
+    'lux7': 40,
+    'lux8': 40
 }
 rankAdder = {
     'acolyte': 0,
@@ -74,7 +83,16 @@ rankAdder = {
     'rank6': 10,
     'council': 20,
     'chosen': 25,
-    'emperor': 27
+    'emperor': 27,
+    'lux': 0,
+    'lux1': 0,
+    'lux2': 0,
+    'lux3': 0,
+    'lux4': 0,
+    'lux5': 0,
+    'lux6': 0,
+    'lux7': 0,
+    'lux8': 0
 }
 rankHealth = {
     'acolyte': 2,
@@ -91,7 +109,16 @@ rankHealth = {
     'rank6': 5,
     'council': 7,
     'chosen': 8,
-    'emperor': 9
+    'emperor': 9,
+    'lux': 8,
+    'lux1': 9,
+    'lux2': 10,
+    'lux3': 11,
+    'lux4': 12,
+    'lux5': 13,
+    'lux6': 14,
+    'lux7': 15,
+    'lux8': 16
 }
 
 for x in range(1, 10000):
@@ -197,13 +224,12 @@ def generateCID():
     cID = 0
     cID = random.randrange(1, 9999)
     i = 0
-    while (i < len(characterList)) or (i != 123456):
-        if (cID == characterList[i]['cID']):
+    while (i < len(characterList) and i != 123456):
+        if (characterList[i]['cID'] == cID):
+            cID = random.randrange(1,9999)
             i = 0
-            cID = random.randrange(1, 9999)
         else:
             i = 123456
-            return cID
 
 
 def handleSelect(uID, cID):
